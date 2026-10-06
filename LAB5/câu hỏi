@@ -1,0 +1,13 @@
+Câu 1. Phân biệt vai trò của NAT và firewall rule trong mô hình.
+NAT có nhiệm vụ chuyển đổi địa chỉ IP giữa mạng nội bộ và mạng bên ngoài, giúp các máy trong LAN/DMZ có thể giao tiếp với Internet hoặc chuyển tiếp kết nối từ WAN vào máy nội bộ. Firewall rule có nhiệm vụ kiểm soát lưu lượng, quyết định gói tin nào được Pass và gói tin nào bị Block dựa trên nguồn, đích, giao thức và cổng.
+Câu 2. Vì sao nên tách máy chủ Web/Mail/FTP vào DMZ thay vì đặt trong LAN?
+Vì các máy chủ Web/Mail/FTP thường cung cấp dịch vụ cho bên ngoài nên có nguy cơ bị tấn công cao hơn. Đặt chúng trong DMZ giúp cô lập chúng khỏi LAN. Nếu máy chủ DMZ bị xâm nhập, firewall vẫn có thể chặn hoặc hạn chế truy cập từ DMZ vào mạng LAN, từ đó bảo vệ các máy và dữ liệu nội bộ.
+Câu 3. Nếu rule Block nằm dưới một rule Pass tổng quát thì kết quả có thể như thế nào?
+pfSense xét các rule theo thứ tự từ trên xuống và sử dụng rule phù hợp trước. Vì vậy, nếu một rule Pass tổng quát nằm trên rule Block, lưu lượng có thể được cho phép trước khi đến rule Block. Khi đó rule Block phía dưới không phát huy tác dụng. Vì vậy rule Block cụ thể cần được đặt đúng thứ tự.
+Câu 4. Muốn chặn ping nhưng vẫn cho truy cập web, cần cấu hình các rule nào?
+Có thể cấu hình rule Block ICMP để chặn ping, đồng thời tạo các rule Pass TCP port 80 (HTTP) và TCP port 443 (HTTPS) để cho phép truy cập Web. Nếu máy cần phân giải tên miền thì cần thêm rule Pass DNS port 53 TCP/UDP. Rule Block ICMP phải được đặt đúng thứ tự so với các rule Pass.
+Câu 5. Logging của firewall giúp ích gì trong xử lý sự cố?
+Logging giúp ghi lại các gói tin đã bị chặn hoặc được xử lý bởi firewall rule. Qua Status → System Logs → Firewall, quản trị viên có thể xem địa chỉ nguồn, địa chỉ đích, giao thức, cổng và rule liên quan. Nhờ đó có thể xác định lưu lượng đang bị rule nào chặn và hỗ trợ tìm nguyên nhân khi kết nối không hoạt động. Tài liệu cũng hướng dẫn có thể đối chiếu với Diagnostics → States để xác định luồng đã được pfSense cho qua hay chưa.
+Câu 6. Nêu ít nhất ba biện pháp hardening cho pfSense trong mô hình này.
+Có thể thực hiện các biện pháp: đổi mật khẩu mặc định của tài khoản quản trị thành mật khẩu mạnh; chỉ cho phép truy cập WebGUI pfSense từ mạng quản trị/LAN tin cậy; chỉ mở các port và dịch vụ thực sự cần thiết theo nguyên tắc least privilege; thường xuyên cập nhật pfSense; bật logging cho các rule Block quan trọng; sao lưu cấu hình định kỳ và hạn chế lưu lượng từ DMZ vào LAN.
+
